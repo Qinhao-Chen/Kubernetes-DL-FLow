@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CNN Inference</title>
+</head>
+<body>
+  <h2>Upload an PNG Image for Prediction</h2>
+  <input type="file" id="imageInput" accept="image/*">
+  <button onclick="sendImage()">Predict</button>
+  <p id="result"></p>
+
+  <script>
+    async function sendImage() {
+      const fileInput = document.getElementById("imageInput");
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+
+      reader.onloadend = async () => {
+        const base64 = reader.result.split(",")[1]; // Strip metadata
+        const response = await fetch("http://34.66.97.27/predict", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ image_base64: base64 })
+        });
+        const data = await response.json();
+        document.getElementById("result").innerText = "Prediction: " + data.prediction;
+      };
+
+      reader.readAsDataURL(file);
+    }
+  </script>
+</body>
+</html>
